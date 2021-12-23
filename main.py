@@ -27,23 +27,27 @@ def list():
 
 @app.route('/search/')
 def search():
-    name = request.args.get('name')
+
+    search = request.args.get('name')
 
     with open('candidates.json') as f:
-        search = json.load(f)
-    with open('settings.json') as f:
-        settings = json.load(f)
+        candidates = json.load(f)
+    with open('settings.json') as sf:
+        settings = json.load(sf)
+
     users = []
-    if name:
-        for candidate in search:
-            if name.lower() in candidate['name']:
-                users.append((candidate['id'], candidate['name']))
 
-    return render_template('search.html', users=users, count_users = len(users))
+    for element in candidates:
+        if not settings["case-sensitive"]:
+            if search.lower() in element["name"].lower():
+                users.append(element)
+        else:
+            if settings["case-sensitive"]:
+                if search in element["name"]:
+                    users.append(element)
+    return render_template("search.html", users=users, count_users=len(users))
 
-
-
-#
+    #
 
 @app.route('/skills/')
 def search_skill():
